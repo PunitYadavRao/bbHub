@@ -20,7 +20,7 @@ const pixelify = Pixelify_Sans({
 
 export const metadata: Metadata = {
   title: "BBHub | We’ve got your back, you’ve got the bench",
-  description: "BBHub: we’ve got your back, you’ve got the bench. Coming soon.",
+  description: "BBHub: we’ve got your back, you’ve got the bench.",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "48x48" },

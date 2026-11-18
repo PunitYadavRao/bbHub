@@ -1,22 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f6f3ec;
-  --foreground: #0e0f12;
-  --muted: #55545a;
-  --border: #e2ddd2;
+  --background: #000000;
+  --foreground: #ffffff;
+  --muted: #9a9aa3;
+  --border: #26272c;
   --brand: #e8262b;
-  --highlight: #e8262b;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0e0f12;
-    --foreground: #ffffff;
-    --muted: #9a9aa3;
-    --border: #26272c;
-    --highlight: #ffc72c;
-  }
+  --highlight: #ffc72c;
 }
 
 @theme inline {
@@ -34,24 +24,4 @@
 body {
   background: var(--background);
   color: var(--foreground);
-}
-
-@keyframes pulse-dot {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.35;
-  }
-}
-
-.pulse-dot {
-  animation: pulse-dot 2s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .pulse-dot {
-    animation: none;
-  }
 }

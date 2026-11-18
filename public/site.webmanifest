@@ -4,7 +4,7 @@
   "description": "We’ve got your back, you’ve got the bench.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0E0F12",
+  "background_color": "#000000",
   "theme_color": "#E8262B",
   "icons": [
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
