@@ -24,15 +24,6 @@ export default function Home() {
           <span className="text-brand">you’ve got the bench.</span>
         </p>
       </header>
-
-      <section className="flex flex-1 flex-col items-center justify-center gap-3 py-10">
-        <span className="font-mono text-xs uppercase tracking-widest text-muted sm:text-sm">
-          Owned by
-        </span>
-        <h2 className="text-balance text-[clamp(2.75rem,15vw,5rem)] font-extrabold leading-[0.95] tracking-[-0.05em] sm:text-8xl lg:text-9xl">
-          Punit Yadav Rao
-        </h2>
-      </section>
     </main>
   );
 }
