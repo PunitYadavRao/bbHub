@@ -148,6 +148,13 @@ Important Next 16 behaviour: when you navigate away, the previous page is kept a
 - The progress rail is hidden below 640px wide, where it would overlap text. The swipe-carousel CSS applies only to the static layout (`:not([data-stage="on"])`).
 - Only reduced-motion visitors get the static stacked page now. `lite.ts` is no longer reached (it only loads when the stage query fails and motion is allowed, which can't happen any more).
 
+## Phones on the dev server (2026-11-25)
+
+- **Why phones got a plain page:** Next 16 dev blocks its dev scripts (and the HMR websocket) for any host but `localhost`. A phone opening `http://<laptop-ip>:3000` (or a browser on `127.0.0.1`) therefore never hydrated.
+- **Fix:** `allowedDevOrigins` in `next.config.ts`, covering private ranges only (`10.*.*.*`, `192.168.*.*`, `172.*.*.*`, `127.0.0.1`, `*.local`). This is dev-only; production was never affected.
+- **Touch feel:** Lenis now runs with `syncTouch: true` (`syncTouchLerp: 0.075`), so swipes glide with the same weighted feel as the laptop wheel.
+- **Testing touch:** emulate swipes with CDP `Input.dispatchTouchEvent` against `http://<laptop-ip>:3000`.
+
 ## How to test
 
 - `npx tsc --noEmit -p .`, `npx eslint components/landing`, `npm run build`, then `npx next start -p 3100`.

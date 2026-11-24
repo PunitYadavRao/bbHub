@@ -61,7 +61,9 @@ export function startMotion(root: HTMLElement): MotionApi {
     window.scrollTo(0, 0);
 
     // Smooth scrolling on GSAP's ticker, so Lenis and ScrollTrigger share one clock.
-    const smooth = new Lenis({ lerp: 0.085, wheelMultiplier: 0.9 });
+    // Touch is smoothed too (syncTouch), so a swipe on a phone glides through the scenes with
+    // the same weighted feel as a wheel on a laptop instead of plain native scrolling.
+    const smooth = new Lenis({ lerp: 0.085, wheelMultiplier: 0.9, syncTouch: true, syncTouchLerp: 0.075 });
     lenis = smooth;
     smooth.scrollTo(0, { immediate: true, force: true });
     smooth.on("scroll", ScrollTrigger.update);
