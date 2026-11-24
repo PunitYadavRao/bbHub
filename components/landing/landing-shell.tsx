@@ -207,8 +207,8 @@ export function LandingShell({ authSlot, children }: { authSlot: ReactNode; chil
       const y = event.clientY - box.top;
       card.style.setProperty("--mx", `${x}px`);
       card.style.setProperty("--my", `${y}px`);
-      card.style.setProperty("--rx", `${((y / box.height - 0.5) * -6).toFixed(2)}deg`);
-      card.style.setProperty("--ry", `${((x / box.width - 0.5) * 8).toFixed(2)}deg`);
+      card.style.setProperty("--rx", `${((y / box.height - 0.5) * -3).toFixed(2)}deg`);
+      card.style.setProperty("--ry", `${((x / box.width - 0.5) * 4).toFixed(2)}deg`);
     };
     const onLeave = () => {
       if (active) reset(active);

@@ -76,16 +76,16 @@ export function startMesh(canvas: HTMLCanvasElement, { light = false }: { light?
       x: random(-box.x, box.x),
       y: random(-box.y, box.y),
       z: random(-box.z, box.z),
-      vx: random(-0.14, 0.14),
-      vy: random(-0.12, 0.12),
-      vz: random(-0.12, 0.12),
+      vx: random(-0.07, 0.07),
+      vy: random(-0.06, 0.06),
+      vz: random(-0.06, 0.06),
       red: index % 9 === 0,
     }));
     motes = Array.from({ length: light ? 10 : 18 }, () => ({
       x: random(0, width),
       y: random(0, height),
-      vx: random(-0.08, 0.08),
-      vy: random(-0.06, 0.06),
+      vx: random(-0.04, 0.04),
+      vy: random(-0.03, 0.03),
       r: random(6, 34),
       a: random(0.05, 0.16),
     }));
@@ -97,10 +97,10 @@ export function startMesh(canvas: HTMLCanvasElement, { light = false }: { light?
     if (light && ticks % 2) return;
     const speed = light ? 2 : 1;
 
-    spin += 0.0006 * speed;
+    spin += 0.0003 * speed;
     leanX += (aimX - leanX) * 0.04;
     leanY += (aimY - leanY) * 0.04;
-    const yaw = spin + leanX + window.scrollY * 0.00035;
+    const yaw = spin + leanX + window.scrollY * 0.00018;
     const pitch = Math.sin(spin * 0.8) * 0.22 + leanY;
     const cy = Math.cos(yaw);
     const sy = Math.sin(yaw);
@@ -193,8 +193,8 @@ export function startMesh(canvas: HTMLCanvasElement, { light = false }: { light?
   };
 
   const onPointerMove = (event: PointerEvent) => {
-    aimX = (event.clientX / width - 0.5) * 0.25;
-    aimY = (event.clientY / height - 0.5) * 0.18;
+    aimX = (event.clientX / width - 0.5) * 0.12;
+    aimY = (event.clientY / height - 0.5) * 0.09;
   };
 
   layout();

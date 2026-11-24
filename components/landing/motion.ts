@@ -62,8 +62,9 @@ export function startMotion(root: HTMLElement): MotionApi {
 
     // Smooth scrolling on GSAP's ticker, so Lenis and ScrollTrigger share one clock.
     // Touch is smoothed too (syncTouch), so a swipe on a phone glides through the scenes with
-    // the same weighted feel as a wheel on a laptop instead of plain native scrolling.
-    const smooth = new Lenis({ lerp: 0.085, wheelMultiplier: 0.9, syncTouch: true, syncTouchLerp: 0.075 });
+    // the same weighted feel as a wheel on a laptop instead of plain native scrolling. Each
+    // swipe travels 60% of the finger distance, so transitions play out slower on phones.
+    const smooth = new Lenis({ lerp: 0.085, wheelMultiplier: 0.9, syncTouch: true, syncTouchLerp: 0.06, touchMultiplier: 0.6 });
     lenis = smooth;
     smooth.scrollTo(0, { immediate: true, force: true });
     smooth.on("scroll", ScrollTrigger.update);
@@ -205,16 +206,16 @@ export function startMotion(root: HTMLElement): MotionApi {
     const stopCursor = startCursor(root, one(".bbh-cursor"));
 
     // Pointer: the hero icons drift by depth.
-    const glyphX = glyphs.map((glyph) => gsap.quickTo(glyph, "x", { duration: 1.2, ease: "power3" }));
-    const glyphY = glyphs.map((glyph) => gsap.quickTo(glyph, "y", { duration: 1.2, ease: "power3" }));
+    const glyphX = glyphs.map((glyph) => gsap.quickTo(glyph, "x", { duration: 1.6, ease: "power3" }));
+    const glyphY = glyphs.map((glyph) => gsap.quickTo(glyph, "y", { duration: 1.6, ease: "power3" }));
 
     const onPointerMove = (event: PointerEvent) => {
       const nx = event.clientX / window.innerWidth - 0.5;
       const ny = event.clientY / window.innerHeight - 0.5;
       glyphs.forEach((_, i) => {
         const depth = 0.6 + (i % 3) * 0.45;
-        glyphX[i](nx * -26 * depth);
-        glyphY[i](ny * -20 * depth);
+        glyphX[i](nx * -13 * depth);
+        glyphY[i](ny * -10 * depth);
       });
     };
     window.addEventListener("pointermove", onPointerMove, { passive: true });
