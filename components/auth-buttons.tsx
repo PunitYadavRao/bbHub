@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { headers } from "next/headers";
 import { getSessionCookie } from "better-auth/cookies";
+import { TransitionLink } from "@/components/page-transition";
 import { getCurrentUser } from "@/lib/session";
 
 const navButton =
@@ -9,9 +9,9 @@ const navButton =
 /** Shown to visitors without a session, and while the session check streams in. */
 export function LoginButton() {
   return (
-    <Link href="/join" className={navButton}>
+    <TransitionLink href="/join" className={navButton} data-nav-cta="">
       Log in
-    </Link>
+    </TransitionLink>
   );
 }
 
@@ -25,8 +25,12 @@ export async function NavAuthButton() {
   if (!me || me.isBanned) return <LoginButton />;
 
   return (
-    <Link href={me.onboardingCompleted ? "/home" : "/join"} className={navButton}>
+    <TransitionLink
+      href={me.onboardingCompleted ? "/home" : "/join"}
+      className={navButton}
+      data-nav-cta=""
+    >
       {me.onboardingCompleted ? "Open BBHub" : "Finish signing up"}
-    </Link>
+    </TransitionLink>
   );
 }
