@@ -8,7 +8,7 @@ import { eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import * as schema from "@/db/schema";
 import { CAMPUS_EMAIL_ERROR, matchCollegeByEmail } from "./domain-guard";
-import { sendOtpEmail } from "./email";
+import { EMAIL_NOT_READY, emailConfigured, sendOtpEmail } from "./email";
 
 export const googleEnabled = Boolean(
   process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET,
@@ -112,10 +112,22 @@ function createAuth() {
         if (!(await matchCollegeByEmail(email))) {
           throw new APIError("FORBIDDEN", { message: CAMPUS_EMAIL_ERROR });
         }
+        // Better Auth logs send failures but still replies "success", so refuse
+        // up front when no email provider is configured.
+        if (!emailConfigured()) {
+          throw new APIError("SERVICE_UNAVAILABLE", { message: EMAIL_NOT_READY });
+        }
       }),
     },
 
+    advanced: {
+      // Netlify sets this header itself, so visitors can't fake their IP.
+      ipAddress: { ipAddressHeaders: ["x-nf-client-connection-ip", "x-forwarded-for"] },
+    },
+
     rateLimit: {
+      // Stored in Postgres so limits hold across serverless instances.
+      storage: "database",
       customRules: {
         "/email-otp/send-verification-otp": { window: 60, max: 3 },
         "/sign-in/email-otp": { window: 60, max: 10 },

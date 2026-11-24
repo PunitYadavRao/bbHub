@@ -1,13 +1,22 @@
+import { APIError } from "better-auth/api";
 import { Resend } from "resend";
 
 let resend: Resend | null = null;
+
+export const EMAIL_NOT_READY = "Email login isn't switched on yet. Please try again soon.";
+
+/** In production a Resend key is required; locally codes are printed instead. */
+export function emailConfigured(): boolean {
+  return Boolean(process.env.RESEND_API_KEY) || process.env.NODE_ENV !== "production";
+}
 
 export async function sendOtpEmail(to: string, otp: string): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
 
   if (!apiKey) {
     if (process.env.NODE_ENV === "production") {
-      throw new Error("RESEND_API_KEY is not set; cannot send login codes.");
+      console.error("RESEND_API_KEY is not set; cannot send login codes.");
+      throw new APIError("SERVICE_UNAVAILABLE", { message: EMAIL_NOT_READY });
     }
     // Local development without an email provider: print the code instead.
     console.log(`\n[dev] BBHub login code for ${to}: ${otp}\n`);
@@ -28,6 +37,9 @@ export async function sendOtpEmail(to: string, otp: string): Promise<void> {
       </div>`,
   });
   if (error) {
-    throw new Error(`Could not send login email: ${error.message}`);
+    console.error("Resend failed to send a login code:", error);
+    throw new APIError("BAD_GATEWAY", {
+      message: "We couldn't send the email. Please try again in a minute.",
+    });
   }
 }

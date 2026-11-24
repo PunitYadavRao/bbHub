@@ -36,6 +36,7 @@ async function JoinGate({ searchParams }: Pick<PageProps<"/join">, "searchParams
   return (
     <JoinFlow
       key={me?.id ?? "guest"}
+      mode={params.mode === "login" ? "login" : "signup"}
       signedIn={Boolean(me)}
       googleEnabled={googleEnabled}
       initialError={describeError(params.error)}

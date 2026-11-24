@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, Loader2, RefreshCw, ShieldCheck, XCircle } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
@@ -10,6 +11,7 @@ import { validateHandleFormat } from "@/lib/handle-rules";
 type Step = 1 | 2 | 3;
 
 type Props = {
+  mode: "signup" | "login";
   signedIn: boolean;
   googleEnabled: boolean;
   initialError: string | null;
@@ -20,7 +22,7 @@ const inputClass =
 const primaryButton =
   "w-full rounded-xl bg-brand py-2.5 text-sm font-semibold text-white transition hover:bg-brand-hover disabled:opacity-50";
 
-export function JoinFlow({ signedIn, googleEnabled, initialError }: Props) {
+export function JoinFlow({ mode, signedIn, googleEnabled, initialError }: Props) {
   const router = useRouter();
   const [step, setStep] = useState<Step>(signedIn ? 3 : 1);
   const [email, setEmail] = useState("");
@@ -90,9 +92,13 @@ export function JoinFlow({ signedIn, googleEnabled, initialError }: Props) {
 
       {step === 1 && (
         <div>
-          <h1 className="text-center text-2xl font-bold">Verify your campus email</h1>
+          <h1 className="text-center text-2xl font-bold">
+            {mode === "login" ? "Welcome back" : "Create your account"}
+          </h1>
           <p className="mt-1.5 text-center text-sm text-muted">
-            Only verified students get in.
+            {mode === "login"
+              ? "Log in with your college email."
+              : "Sign up with your college email. Only verified students get in."}
           </p>
 
           {googleEnabled && (
@@ -139,6 +145,16 @@ export function JoinFlow({ signedIn, googleEnabled, initialError }: Props) {
               {loading ? "Sending code…" : "Send code"}
             </button>
           </form>
+
+          <p className="mt-5 text-center text-xs text-muted">
+            {mode === "login" ? "New here? " : "Already have an account? "}
+            <Link
+              href={mode === "login" ? "/join?mode=signup" : "/join?mode=login"}
+              className="font-medium text-foreground underline"
+            >
+              {mode === "login" ? "Sign up" : "Log in"}
+            </Link>
+          </p>
         </div>
       )}
 

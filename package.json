@@ -8,11 +8,12 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "db:push": "drizzle-kit push",
-    "db:seed": "tsx db/seed.ts",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "db:generate": "drizzle-kit generate && node scripts/sync-migrations.mjs",
+    "db:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
+    "@netlify/database": "^2.0.4",
     "better-auth": "^1.7.27",
     "drizzle-orm": "^0.45.4",
     "lucide-react": "^1.79.0",
