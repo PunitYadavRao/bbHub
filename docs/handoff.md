@@ -155,6 +155,15 @@ Important Next 16 behaviour: when you navigate away, the previous page is kept a
 - **Touch feel:** Lenis now runs with `syncTouch: true` (`syncTouchLerp: 0.075`), so swipes glide with the same weighted feel as the laptop wheel.
 - **Testing touch:** emulate swipes with CDP `Input.dispatchTouchEvent` against `http://<laptop-ip>:3000`.
 
+## Full experience even with "reduce motion" (2026-11-25)
+
+- The owner's phones showed only the static page. The live site worked in Chromium and WebKit (iPhone and iPad emulation), so the cause was the device's reduced-motion setting: Android "Remove animations" (often switched on by battery saver) or iOS "Reduce Motion".
+- At the owner's request, the landing now ignores that setting:
+  - `STAGE_QUERY = "all"`
+  - the page-wipe, the pixel click, the load curtain and the CSS animations no longer have reduced-motion fallbacks
+- To honour the setting again, set `STAGE_QUERY` back to `(prefers-reduced-motion: no-preference)` and restore the removed `@media (prefers-reduced-motion: reduce)` blocks (see git history).
+- Live site: https://bbhub.app (Netlify project `bbhub-app`, auto-deploys `main`).
+
 ## How to test
 
 - `npx tsc --noEmit -p .`, `npx eslint components/landing`, `npm run build`, then `npx next start -p 3100`.

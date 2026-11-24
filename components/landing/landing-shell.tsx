@@ -147,7 +147,6 @@ export function LandingShell({ authSlot, children }: { authSlot: ReactNode; chil
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
-    const still = window.matchMedia("(prefers-reduced-motion: reduce)");
     const RAYS = [
       [0, -1],
       [1, -1],
@@ -166,7 +165,7 @@ export function LandingShell({ authSlot, children }: { authSlot: ReactNode; chil
       return scene?.dataset.scene === "intro" || scene?.dataset.scene === "drop";
     };
     const onDown = (event: PointerEvent) => {
-      if (still.matches || event.button !== 0) return;
+      if (event.button !== 0) return;
       const burst = document.createElement("span");
       burst.className = "bbh-burst";
       burst.setAttribute("aria-hidden", "true");

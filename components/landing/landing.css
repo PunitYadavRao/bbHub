@@ -1581,20 +1581,14 @@ html.bbh-stage::-webkit-scrollbar {
 /* Load curtain -------------------------------------------------------------------- */
 
 .bbh-curtain {
-  display: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .bbh-curtain {
-    position: fixed;
-    inset: 0;
-    z-index: 80;
-    display: block;
-    overflow: hidden;
-    pointer-events: none;
-    /* Safety net: if the motion code never loads, the curtain still clears. */
-    animation: bbh-curtain-fallback 0.5s var(--ease-io) 3s forwards;
-  }
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: block;
+  overflow: hidden;
+  pointer-events: none;
+  /* Safety net: if the motion code never loads, the curtain still clears. */
+  animation: bbh-curtain-fallback 0.5s var(--ease-io) 3s forwards;
 }
 
 @keyframes bbh-curtain-fallback {
@@ -2029,14 +2023,3 @@ html.bbh-stage::-webkit-scrollbar {
   }
 }
 
-/* Reduced motion: keep hover colour changes, drop the movement. */
-@media (prefers-reduced-motion: reduce) {
-  .bbh-landing *,
-  .bbh-landing *::before,
-  .bbh-landing *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    transition-delay: 0s !important;
-  }
-}

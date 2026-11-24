@@ -48,10 +48,6 @@ export function PageTransition({ children }: { children: ReactNode }) {
 
   function navigate(href: string) {
     if (busy.current) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      router.push(href);
-      return;
-    }
     busy.current = true;
     target.current = href;
     setPhase("cover");
