@@ -45,8 +45,5 @@ next-env.d.ts
 .idea/
 .claude/
 
-# allow the example env file
-!.env.example
-
 # netlify cli link state
 .netlify/
