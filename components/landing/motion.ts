@@ -198,7 +198,8 @@ export function startMotion(root: HTMLElement): MotionApi {
     playIntro(true);
 
     // Background mesh and the blob cursor run for as long as the stage does.
-    const stopMesh = startMesh(one(".bbh-mesh") as HTMLCanvasElement);
+    // Phones and tablets get the lighter mesh (fewer points, 30fps).
+    const stopMesh = startMesh(one(".bbh-mesh") as HTMLCanvasElement, { light: window.innerWidth < 1024 });
     const stopCursor = startCursor(root, one(".bbh-cursor"));
 
     // Pointer: the hero icons drift by depth.

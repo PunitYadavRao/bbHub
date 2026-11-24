@@ -57,7 +57,7 @@ function Bars({ profile }: { profile: number[] }) {
   );
 }
 
-/** Red load curtain (desktop only). CSS hides it after 3s if the motion code never arrives. */
+/** Red load curtain. CSS hides it after 3s if the motion code never arrives. */
 function Curtain() {
   return (
     <div className="bbh-curtain" aria-hidden="true">

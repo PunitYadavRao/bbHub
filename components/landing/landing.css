@@ -1578,13 +1578,13 @@ html.bbh-stage::-webkit-scrollbar {
   outline-offset: 3px;
 }
 
-/* Load curtain (desktop only) -------------------------------------------------------------------- */
+/* Load curtain -------------------------------------------------------------------- */
 
 .bbh-curtain {
   display: none;
 }
 
-@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+@media (prefers-reduced-motion: no-preference) {
   .bbh-curtain {
     position: fixed;
     inset: 0;
@@ -1816,6 +1816,13 @@ html.bbh-stage::-webkit-scrollbar {
   display: block;
 }
 
+/* Phones: no room beside the text, so the progress rail sits this one out. */
+@media (max-width: 639px) {
+  .bbh-landing[data-stage="on"] .bbh-rail {
+    display: none;
+  }
+}
+
 .bbh-rail__dot {
   position: absolute;
   left: 0;
@@ -1912,9 +1919,9 @@ html.bbh-stage::-webkit-scrollbar {
   cursor: none !important;
 }
 
-/* Phones and tablets: cards become a swipe carousel. */
+/* Static layout on narrow screens (reduced motion): cards become a swipe carousel. */
 @media (max-width: 1023px) {
-  .bbh-track {
+  .bbh-landing:not([data-stage="on"]) .bbh-track {
     display: flex;
     max-width: none;
     gap: 0.85rem;
@@ -1926,11 +1933,11 @@ html.bbh-stage::-webkit-scrollbar {
     padding: 0.25rem 1.25rem 1rem;
   }
 
-  .bbh-track::-webkit-scrollbar {
+  .bbh-landing:not([data-stage="on"]) .bbh-track::-webkit-scrollbar {
     display: none;
   }
 
-  .bbh-track > li {
+  .bbh-landing:not([data-stage="on"]) .bbh-track > li {
     flex: 0 0 min(78vw, 20rem);
     scroll-snap-align: center;
   }
@@ -1939,7 +1946,7 @@ html.bbh-stage::-webkit-scrollbar {
     aspect-ratio: 16 / 9;
   }
 
-  .bbh-inside__panel::after {
+  .bbh-landing:not([data-stage="on"]) .bbh-inside__panel::after {
     content: "swipe →";
     display: block;
     margin-top: 0.4rem;

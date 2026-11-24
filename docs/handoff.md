@@ -142,6 +142,12 @@ Important Next 16 behaviour: when you navigate away, the previous page is kept a
   - skipped with reduced motion
 - Don't commit the owner's reference video in the repo root (`vecteezy_click-icon-pixel-animation-hand-pointer-pressing-button-on_23950034.mp4`).
 
+## Stage on every screen size (2026-11-25)
+
+- `STAGE_QUERY` is now just `(prefers-reduced-motion: no-preference)`, so phones and tablets run the same scroll stage as laptops: wipes, scene transitions, the triangle mesh (light mode below 1024px wide) and the end loop. The load curtain runs at all sizes too.
+- The progress rail is hidden below 640px wide, where it would overlap text. The swipe-carousel CSS applies only to the static layout (`:not([data-stage="on"])`).
+- Only reduced-motion visitors get the static stacked page now. `lite.ts` is no longer reached (it only loads when the stage query fails and motion is allowed, which can't happen any more).
+
 ## How to test
 
 - `npx tsc --noEmit -p .`, `npx eslint components/landing`, `npm run build`, then `npx next start -p 3100`.
