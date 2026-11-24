@@ -47,3 +47,6 @@ next-env.d.ts
 
 # netlify cli link state
 .netlify/
+
+# allow the example env file
+!.env.example
