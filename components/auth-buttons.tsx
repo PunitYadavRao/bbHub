@@ -3,39 +3,30 @@ import { headers } from "next/headers";
 import { getSessionCookie } from "better-auth/cookies";
 import { getCurrentUser } from "@/lib/session";
 
-const primary =
-  "rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-hover";
-const secondary =
-  "rounded-full border border-border px-6 py-2.5 text-sm font-semibold text-foreground transition hover:border-white/40";
+const navButton =
+  "rounded-full bg-brand px-4 py-1.5 text-sm font-semibold text-white transition hover:bg-brand-hover";
 
 /** Shown to visitors without a session, and while the session check streams in. */
-export function GuestButtons() {
+export function LoginButton() {
   return (
-    <div className="flex items-center justify-center gap-3">
-      <Link href="/join?mode=signup" className={primary}>
-        Sign up
-      </Link>
-      <Link href="/join?mode=login" className={secondary}>
-        Log in
-      </Link>
-    </div>
+    <Link href="/join" className={navButton}>
+      Log in
+    </Link>
   );
 }
 
-/** Swaps the guest buttons for "Open BBHub" when the visitor is signed in. */
-export async function AuthButtons() {
+/** The navbar's corner button: "Log in", or a way back in for signed-in students. */
+export async function NavAuthButton() {
   const requestHeaders = await headers();
   // No session cookie: skip the database entirely.
-  if (!getSessionCookie(requestHeaders)) return <GuestButtons />;
+  if (!getSessionCookie(requestHeaders)) return <LoginButton />;
 
   const me = await getCurrentUser().catch(() => null);
-  if (!me || me.isBanned) return <GuestButtons />;
+  if (!me || me.isBanned) return <LoginButton />;
 
   return (
-    <div className="flex items-center justify-center">
-      <Link href={me.onboardingCompleted ? "/home" : "/join"} className={primary}>
-        {me.onboardingCompleted ? "Open BBHub" : "Finish signing up"}
-      </Link>
-    </div>
+    <Link href={me.onboardingCompleted ? "/home" : "/join"} className={navButton}>
+      {me.onboardingCompleted ? "Open BBHub" : "Finish signing up"}
+    </Link>
   );
 }

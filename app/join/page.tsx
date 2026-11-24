@@ -8,8 +8,8 @@ import { getCurrentUser } from "@/lib/session";
 import { JoinFlow } from "./join-flow";
 
 export const metadata: Metadata = {
-  title: "Join BBHub",
-  description: "Sign in with your college Google account and pick your anonymous username.",
+  title: "Log in to BBHub",
+  description: "Sign in with your college Google account.",
 };
 
 export default function JoinPage({ searchParams }: PageProps<"/join">) {
@@ -36,7 +36,6 @@ async function JoinGate({ searchParams }: Pick<PageProps<"/join">, "searchParams
   return (
     <JoinFlow
       key={me?.id ?? "guest"}
-      mode={params.mode === "login" ? "login" : "signup"}
       signedIn={Boolean(me)}
       googleEnabled={googleEnabled}
       initialError={describeError(params.error)}
@@ -52,5 +51,5 @@ function describeError(code: string | string[] | undefined): string | null {
 }
 
 function CardSkeleton() {
-  return <div className="h-96 w-full max-w-lg animate-pulse rounded-2xl bg-surface" />;
+  return <div className="h-11 w-full max-w-xs animate-pulse rounded-xl bg-surface" />;
 }

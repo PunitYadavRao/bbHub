@@ -2,14 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, Loader2, RefreshCw, XCircle } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { HANDLE_MAX, validateHandleFormat } from "@/lib/handle-rules";
 
 type Props = {
-  mode: "signup" | "login";
   signedIn: boolean;
   googleEnabled: boolean;
   initialError: string | null;
@@ -18,21 +16,13 @@ type Props = {
 const primaryButton =
   "w-full rounded-xl bg-brand py-2.5 text-sm font-semibold text-white transition hover:bg-brand-hover disabled:opacity-50";
 
-export function JoinFlow({ mode, signedIn, googleEnabled, initialError }: Props) {
-  const step = signedIn ? 2 : 1;
-
+export function JoinFlow({ signedIn, googleEnabled, initialError }: Props) {
+  if (!signedIn) {
+    return <GoogleStep googleEnabled={googleEnabled} initialError={initialError} />;
+  }
   return (
     <div className="w-full max-w-lg rounded-2xl border border-border bg-surface p-6 sm:p-7">
-      <div className="mb-5 flex justify-center">
-        <span className="rounded-full border border-brand/30 bg-brand/10 px-3 py-1 font-pixel text-xs tracking-wider text-brand">
-          STEP {step} OF 2
-        </span>
-      </div>
-      {step === 1 ? (
-        <GoogleStep mode={mode} googleEnabled={googleEnabled} initialError={initialError} />
-      ) : (
-        <ProfileStep />
-      )}
+      <ProfileStep />
     </div>
   );
 }
@@ -41,18 +31,15 @@ function ErrorBox({ message }: { message: string }) {
   return (
     <div
       role="alert"
-      className="mb-4 rounded-xl border border-danger/30 bg-danger/10 px-3.5 py-2.5 text-xs text-danger"
+      className="w-full rounded-xl border border-danger/30 bg-danger/10 px-3.5 py-2.5 text-center text-xs text-danger"
     >
       {message}
     </div>
   );
 }
 
-function GoogleStep({
-  mode,
-  googleEnabled,
-  initialError,
-}: Omit<Props, "signedIn">) {
+/** The whole login page: one Google button. First-time students are signed up by it too. */
+function GoogleStep({ googleEnabled, initialError }: Omit<Props, "signedIn">) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(initialError);
 
@@ -71,46 +58,22 @@ function GoogleStep({
   }
 
   return (
-    <div>
+    <div className="flex w-full max-w-xs flex-col items-center gap-3">
       {error && <ErrorBox message={error} />}
-
-      <h1 className="text-center text-2xl font-bold">
-        {mode === "login" ? "Welcome back" : "Join your campus"}
-      </h1>
-      <p className="mt-1.5 text-center text-xs text-muted">
-        Only @rishihood.edu.in and @nst.rishihood.edu.in Google accounts are accepted.
-      </p>
-
       <button
         type="button"
         onClick={handleGoogle}
         disabled={loading || !googleEnabled}
-        className="mt-6 flex w-full items-center justify-center gap-2.5 rounded-xl bg-white py-2.5 text-sm font-semibold text-black transition hover:bg-zinc-200 disabled:opacity-50"
+        className="flex w-full items-center justify-center gap-2.5 rounded-xl bg-white py-3 text-sm font-semibold text-black transition hover:bg-zinc-200 disabled:opacity-50"
       >
         {loading ? <Loader2 className="size-4 animate-spin" /> : <GoogleLogo />}
-        Continue with Google
+        Sign in with Google
       </button>
-
       {!googleEnabled && (
-        <p className="mt-3 text-center text-xs text-muted">
+        <p className="text-center text-xs text-muted">
           Google sign-in isn&apos;t switched on yet. Please try again soon.
         </p>
       )}
-
-      <p className="mt-5 text-center text-xs text-muted">
-        Your college email only proves you&apos;re a student. It&apos;s never shown or linked to
-        your posts.
-      </p>
-
-      <p className="mt-4 text-center text-xs text-muted">
-        {mode === "login" ? "New here? " : "Already have an account? "}
-        <Link
-          href={mode === "login" ? "/join?mode=signup" : "/join?mode=login"}
-          className="font-medium text-foreground underline"
-        >
-          {mode === "login" ? "Sign up" : "Log in"}
-        </Link>
-      </p>
     </div>
   );
 }
