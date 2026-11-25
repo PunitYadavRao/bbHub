@@ -24,6 +24,15 @@ html.bbh-stage::-webkit-scrollbar {
   display: none;
 }
 
+/* Paged touch (motion.ts): swipes move the stage one scene at a time, so the browser's own
+   touch scrolling and overscroll bounce are switched off. */
+html.bbh-paged,
+html.bbh-paged body,
+html.bbh-paged .bbh-landing {
+  overscroll-behavior: none;
+  touch-action: none;
+}
+
 .bbh-scene {
   position: relative;
   scroll-margin-top: 4.5rem;

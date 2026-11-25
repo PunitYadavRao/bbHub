@@ -164,6 +164,17 @@ Important Next 16 behaviour: when you navigate away, the previous page is kept a
 - To honour the setting again, set `STAGE_QUERY` back to `(prefers-reduced-motion: no-preference)` and restore the removed `@media (prefers-reduced-motion: reduce)` blocks (see git history).
 - Live site: https://bbhub.app (Netlify project `bbhub-app`, auto-deploys `main`).
 
+## Paged touch: one swipe = one scene (2026-11-25)
+
+- **When it applies:** touch screens (`(hover: none) and (pointer: coarse)`), via "Paged touch" in `motion.ts`.
+- **How it works:**
+  - A GSAP `Observer` catches vertical swipes.
+  - Each swipe glides the stage with `lenis.scrollTo(..., { lock, force })` to the next or previous resting point: hero, statement (t=1.75), `about`, one stop per card along the track (a stop covers about 0.6 of the screen width), `drop`, `vault`, `footer`, then the end, which triggers the loop.
+  - Duration is 1.1–2.4s by distance, with an ease-in-out curve.
+  - Native touch scroll is off (`html.bbh-paged`, `touch-action: none`). Lenis `syncTouch` is off.
+  - The swipe lock is released on a timer, because the end-of-page loop cuts the glide short.
+- **Unchanged:** laptops keep continuous wheel scrolling. The earlier "60% touch distance" slowdown was removed.
+
 ## How to test
 
 - `npx tsc --noEmit -p .`, `npx eslint components/landing`, `npm run build`, then `npx next start -p 3100`.

@@ -1,4 +1,5 @@
 import gsap from "gsap";
+import { Observer } from "gsap/Observer";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 import type { SectionId } from "./content";
@@ -15,7 +16,7 @@ import { STAGE_QUERY } from "./stage";
  * desktop query (or unmounting) reverts every tween, ScrollTrigger and inline style.
  */
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, Observer);
 
 /** Scroll distance, in vh, for one second of the master timeline. */
 const VH_PER_SECOND = 62;
@@ -61,10 +62,10 @@ export function startMotion(root: HTMLElement): MotionApi {
     window.scrollTo(0, 0);
 
     // Smooth scrolling on GSAP's ticker, so Lenis and ScrollTrigger share one clock.
-    // Touch is smoothed too (syncTouch), so a swipe on a phone glides through the scenes with
-    // the same weighted feel as a wheel on a laptop instead of plain native scrolling. Each
-    // swipe travels 60% of the finger distance, so transitions play out slower on phones.
-    const smooth = new Lenis({ lerp: 0.085, wheelMultiplier: 0.9, syncTouch: true, syncTouchLerp: 0.06, touchMultiplier: 0.6 });
+    // Touch screens are paged: one swipe glides to the next scene (see "Paged touch" below), so
+    // Lenis leaves touch alone there. Wheels and trackpads scroll smoothly as usual.
+    const paged = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+    const smooth = new Lenis({ lerp: 0.085, wheelMultiplier: 0.9, syncTouch: false });
     lenis = smooth;
     smooth.scrollTo(0, { immediate: true, force: true });
     smooth.on("scroll", ScrollTrigger.update);
@@ -294,6 +295,8 @@ export function startMotion(root: HTMLElement): MotionApi {
     flip(statement, { autoAlpha: 0 }, { autoAlpha: 1 }, 0.85);
     const statementLines = within(statement, ".bbh-line__inner");
     rise(statementLines, 0.9, { duration: 0.55, stagger: 0.18 });
+    /** When the statement has fully risen (a resting point for paged touch). */
+    const statementRest = 1.75;
     sink(statementLines, 2.2, { stagger: 0.08 });
 
     // 2. Red bars rise and stay: they become the red background of "What's this place?".
@@ -325,11 +328,13 @@ export function startMotion(root: HTMLElement): MotionApi {
     );
     step(panel, { yPercent: 102 }, { yPercent: 0, duration: 0.7, ease: "power2.inOut" }, at);
     // The track's first tween renders straight away, so it waits off-screen as the panel rises.
+    const trackAt = at + 0.45;
+    const TRACK_TIME = 3;
     tl.fromTo(
       track,
       { x: () => window.innerWidth * 0.92 },
-      { x: () => -(track.scrollWidth - window.innerWidth), duration: 3, immediateRender: true },
-      at + 0.45,
+      { x: () => -(track.scrollWidth - window.innerWidth), duration: TRACK_TIME, immediateRender: true },
+      trackAt,
     );
     // Menu jumps land part-way along the track, with the first cards in view.
     tl.addLabel("inside", at + 0.45 + 1.3);
@@ -416,6 +421,73 @@ export function startMotion(root: HTMLElement): MotionApi {
       });
     });
 
+    // Paged touch ------------------------------------------------------------------------------
+    // On phones and tablets one swipe = one scene: each swipe glides the stage to the next (or
+    // previous) resting point at the same pace as the laptop transitions, so a flick can't fling
+    // past scenes. Native touch scrolling is off while this runs (html.bbh-paged in the CSS).
+    let swipes: Observer | null = null;
+    let stopPaging = () => {};
+    if (paged) {
+      html.classList.add("bbh-paged");
+      const toScroll = (time: number) =>
+        trigger ? trigger.start + (time / tl.duration()) * (trigger.end - trigger.start) : 0;
+      // One stop per card on phones; on wider screens a stop covers about a screen of cards.
+      const cardStops = () => {
+        const vw = window.innerWidth;
+        const from = vw * 0.92;
+        const to = -(track.scrollWidth - vw);
+        const times: number[] = [];
+        let lastX = Number.POSITIVE_INFINITY;
+        for (const card of Array.from(track.children) as HTMLElement[]) {
+          const x = Math.max(to, Math.min(from, vw / 2 - (card.offsetLeft + card.offsetWidth / 2)));
+          if (lastX - x < vw * 0.6) continue;
+          lastX = x;
+          times.push(trackAt + ((x - from) / (to - from)) * TRACK_TIME);
+        }
+        return times;
+      };
+      const stops = () =>
+        [
+          0,
+          statementRest,
+          tl.labels.about,
+          ...cardStops(),
+          tl.labels.drop,
+          tl.labels.vault,
+          tl.labels.footer,
+          tl.duration(),
+        ].map(toScroll);
+      const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+      let moving = false;
+      let release = 0;
+      const go = (direction: 1 | -1) => {
+        if (moving || looping || smooth.isStopped || !trigger) return;
+        const y = window.scrollY;
+        const points = stops().sort((a, b) => a - b);
+        const next =
+          direction > 0 ? points.find((point) => point > y + 8) : [...points].reverse().find((point) => point < y - 8);
+        if (next === undefined) return;
+        moving = true;
+        const screens = Math.abs(next - y) / window.innerHeight;
+        const duration = Math.min(2.4, Math.max(1.1, 0.7 + screens * 0.45));
+        smooth.scrollTo(next, { duration, easing: easeInOut, lock: true, force: true });
+        // Released on a timer, not onComplete: the end-of-page loop can cut the glide short,
+        // and then onComplete never fires.
+        window.clearTimeout(release);
+        release = window.setTimeout(() => {
+          moving = false;
+        }, duration * 1000 + 120);
+      };
+      stopPaging = () => window.clearTimeout(release);
+      swipes = Observer.create({
+        target: window,
+        type: "touch",
+        tolerance: 12,
+        onUp: () => go(1),
+        onDown: () => go(-1),
+      });
+    }
+
     let alive = true;
     void document.fonts.ready.then(() => {
       if (alive) ScrollTrigger.refresh();
@@ -426,6 +498,9 @@ export function startMotion(root: HTMLElement): MotionApi {
       window.removeEventListener("pointermove", onPointerMove);
       stopMesh();
       stopCursor();
+      swipes?.kill();
+      stopPaging();
+      html.classList.remove("bbh-paged");
       gsap.ticker.remove(tick);
       gsap.ticker.lagSmoothing(500, 33);
       smooth.destroy();
